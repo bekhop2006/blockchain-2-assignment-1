@@ -1,57 +1,51 @@
-# Sample Hardhat 3 Beta Project (`node:test` and `viem`)
+# Assignment 1 - Advanced Solidity Patterns & Security Fundamentals
 
-This project showcases a Hardhat 3 Beta project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions.
+This repository contains a complete Hardhat implementation for:
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+- Task 1: Factory pattern with `CREATE` and `CREATE2`
+- Task 2: UUPS upgradeable contracts (V1 -> V2)
+- Task 3: Gas optimization before/after comparison contracts
+- Task 4: Inline assembly basics (caller/sload/sstore/bitwise math)
+- Task 5: Reentrancy and access-control vulnerabilities + fixes
+- Task 6: Slither report templates and rerun workflow
+- Task 7: Written-analysis templates
 
-## Project Overview
+## Quick Start
 
-This example project includes:
-
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
+```bash
+npm install
+npx hardhat compile
 npx hardhat test
 ```
 
-You can also selectively run the Solidity or `node:test` tests:
+## Task Commands
 
-```shell
-npx hardhat test solidity
-npx hardhat test nodejs
+```bash
+# Task 1 deployment + gas logging
+npm run task1:deploy
+
+# Task 2 UUPS deploy and upgrade flow
+npm run task2:deploy-v1
+npm run task2:upgrade-v2
+
+# Task 2 one-command local demo (recommended)
+npm run task2:demo
 ```
 
-### Make a deployment to Sepolia
+## Reports and Screenshots
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+- Use `reports/gas-comparison-template.md` for Task 1 and Task 3 tables.
+- Use `reports/slither-summary-template.md` for Task 6 findings.
+- Use `reports/written-analysis-template.md` for Task 7 theory answers.
+- Save screenshots in `screenshots/`.
 
-To run the deployment to a local chain:
+## Slither
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+Install and run:
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
+```bash
+pip3 install slither-analyzer
+slither . --exclude-dependencies > reports/slither-before.txt
+# apply fixes
+slither . --exclude-dependencies > reports/slither-after.txt
 ```

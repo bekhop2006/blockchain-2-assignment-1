@@ -1,0 +1,27 @@
+## Question 1 - Proxy Patterns Comparison
+
+Transparent proxies separate user and admin flows at the proxy level. Calls from the admin are blocked from reaching implementation functions, while non-admin calls are delegated. This pattern is operationally simple and widely used in OpenZeppelin-style deployments because it avoids selector-clash issues between admin and logic functions. The trade-off is slightly higher operational overhead and additional admin/proxy management complexity.
+
+UUPS (EIP-1822 style with ERC-1967 storage slots) moves upgrade logic into the implementation contract itself. The proxy is thinner, reducing deployment and runtime overhead compared to transparent proxies in many setups. Because upgrade authorization is implemented in `_authorizeUpgrade`, governance policy is explicit in contract code. The risk is that an incorrect implementation upgrade can brick upgradeability if upgrade hooks are removed or misconfigured.
+
+Diamond (EIP-2535) uses a function-selector-to-facet routing table, enabling large modular systems to exceed single-contract size limits. It is useful for protocols with many modules and frequent feature expansion. However, its governance and storage management are more complex: teams must carefully design facet storage layouts and upgrade procedures to avoid corruption across facets.
+
+Storage collision is a core risk in all upgrade patterns. Transparent and UUPS typically mitigate this by maintaining strict storage layout discipline across versions (append-only variables, reserved gaps). Diamond introduces additional facet-level coordination concerns because multiple facets can read/write shared storage namespaces. In all three patterns, missing layout discipline can permanently corrupt state.
+
+Gas overhead differs by architecture. Transparent proxies incur proxy delegation overhead and admin-path checks. UUPS generally reduces overhead by simplifying proxy logic and moving upgrade code to implementation. Diamond dispatch can be efficient for modular calls but includes selector table lookups and can be more complex to optimize globally.
+
+Choice depends on product shape and governance maturity. Transparent proxies fit teams prioritizing operational clarity and conservative upgrades. UUPS is a strong default for modern ERC-1967 upgradeable apps where gas and lean architecture matter. Diamond fits highly modular, long-lived protocols (e.g., systems with many feature surfaces) that can sustain the extra engineering and audit burden.
+
+## Question 2 - Smart Contract Security Landscape
+
+A practical top-5 vulnerability set for DeFi includes reentrancy (SWC-107), access-control weaknesses (SWC-105), integer/precision errors and unsafe math assumptions (historically SWC-101 style risks, though Solidity 0.8 mitigates basic overflow), oracle/price-manipulation design flaws (commonly expressed as business-logic vulnerabilities rather than one SWC code), and unchecked external call/interaction failures (SWC-104 patterns). These categories still dominate incident root causes, especially when composability amplifies edge cases.
+
+The DAO exploit (2016) is the canonical reentrancy case: state updates occurred after external interactions, enabling repeated withdrawals before balance effects were applied. Wormhole (2022) highlighted cross-chain verification and signature-validation failure risk, where a forged guardian validation path enabled minting of unbacked assets. Euler (2023) demonstrated that even advanced protocols can fail through complex economic logic interactions, especially around liquidation, donation mechanics, and accounting assumptions.
+
+Exploit economics in DeFi differ from Web2 breaches because attacks can settle atomically and monetize immediately. Attackers often use flash liquidity, MEV-aware execution, mixers/bridges for laundering, and rapid multi-hop value extraction. As TVL grows, expected attacker payoff rises, so protocols become targets not only for code bugs but also for mechanism-level arbitrage and governance weaknesses.
+
+Automated tools provide broad but incomplete coverage. Slither is fast and strong for structural/static anti-patterns, making it ideal for CI gating and regression checks. Mythril can find symbolic-execution paths that static linting misses but is heavier and can produce difficult triage. Echidna excels at property-based fuzzing and invariants, surfacing deep state-machine bugs when invariants are well specified. None of these replaces manual review for protocol economics, trust boundaries, and upgrade governance.
+
+Manual auditing remains essential for reasoning about business logic, adversarial strategy, and integration assumptions. Human reviewers can connect threat modeling with real attack paths (oracle manipulation, governance capture, sequencing games) that are hard to encode as static rules. The strongest approach is hybrid: automated tooling to continuously scan and fuzz, plus targeted manual audits before major releases.
+
+A professional security SDLC should include: (1) threat modeling at design phase; (2) secure coding standards and upgrade-safe storage policy; (3) unit/integration tests plus invariant fuzzing; (4) static analysis in CI (Slither) with enforced triage; (5) pre-deploy external audit and remediation window; (6) staged rollout with caps/pausable controls; (7) runtime monitoring, alerting, and incident response playbooks; and (8) post-incident learning loops. Security is an operational process, not a one-time audit event.
