@@ -8,9 +8,9 @@ describe("Task 1 - Factory pattern", function () {
     const factory = await Factory.deploy();
     await factory.waitForDeployment();
 
-    await (await factory.deployWithCreate("alpha", { value: ethers.parseEther("0.1") })).wait();
+    await (await factory["deployWithCreate(string)"]("alpha", { value: ethers.parseEther("0.1") })).wait();
     const salt = ethers.keccak256(ethers.toUtf8Bytes("salt-1"));
-    await (await factory.deployWithCreate2("beta", salt, { value: ethers.parseEther("0.2") })).wait();
+    await (await factory["deployWithCreate(string,bytes32)"]("beta", salt, { value: ethers.parseEther("0.2") })).wait();
 
     const deployed = await factory.getDeployedContracts();
     expect(deployed.length).to.equal(2);

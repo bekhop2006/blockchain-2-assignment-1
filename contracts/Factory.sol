@@ -15,7 +15,7 @@ contract Factory {
         _recordDeployment(child, false, bytes32(0));
     }
 
-    function deployWithCreate2(string calldata _name, bytes32 salt) external payable returns (address child) {
+    function deployWithCreate(string calldata _name, bytes32 salt) external payable returns (address child) {
         ChildContract newChild = new ChildContract{salt: salt, value: msg.value}(msg.sender, _name);
         child = address(newChild);
         _recordDeployment(child, true, salt);

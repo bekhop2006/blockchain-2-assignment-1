@@ -1,0 +1,131 @@
+'npx hardhat clean' running (wd: /Users/beknur/Desktop/Blockchain /Assignment_1)
+'npx hardhat clean --global' running (wd: /Users/beknur/Desktop/Blockchain /Assignment_1)
+Problem executing hardhat: WARNING: You are currently using Node.js v25.3.0, which is not supported by Hardhat. This can lead to unexpected behavior. See https://v2.hardhat.org/nodejs-versions
+
+'npx hardhat compile --force' running (wd: /Users/beknur/Desktop/Blockchain /Assignment_1)
+INFO:Detectors:
+Detector: arbitrary-send-eth
+Attacker.attack(uint256) (contracts/Attacker.sol#20-26) sends eth to arbitrary user
+	Dangerous calls:
+	- target.deposit{value: amount}() (contracts/Attacker.sol#24)
+VulnerableAccess.withdrawAll() (contracts/VulnerableAccess.sol#17-20) sends eth to arbitrary user
+	Dangerous calls:
+	- (ok,None) = msg.sender.call{value: address(this).balance}() (contracts/VulnerableAccess.sol#18)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#functions-that-send-ether-to-arbitrary-destinations
+INFO:Detectors:
+Detector: reentrancy-eth
+Reentrancy in VulnerableVault.withdraw(uint256) (contracts/VulnerableVault.sol#11-21):
+	External calls:
+	- (ok,None) = msg.sender.call{value: amount}() (contracts/VulnerableVault.sol#15)
+	State variables written after the call(s):
+	- balances[msg.sender] = 0 (contracts/VulnerableVault.sol#20)
+	VulnerableVault.balances (contracts/VulnerableVault.sol#5) can be used in cross function reentrancies:
+	- VulnerableVault.balances (contracts/VulnerableVault.sol#5)
+	- VulnerableVault.deposit() (contracts/VulnerableVault.sol#7-9)
+	- VulnerableVault.withdraw(uint256) (contracts/VulnerableVault.sol#11-21)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+INFO:Detectors:
+Detector: locked-ether
+Contract locking ether found:
+	Contract ChildContract (contracts/ChildContract.sol#4-16) has payable functions:
+	 - ChildContract.constructor(address,string) (contracts/ChildContract.sol#8-11)
+	But does not have a function to withdraw the ether
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#contracts-that-lock-ether
+INFO:Detectors:
+Detector: events-maths
+LogicV1.initialize(uint256) (contracts/LogicV1.sol#11-14) should emit an event for: 
+	- counter = startValue (contracts/LogicV1.sol#13) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-arithmetic
+INFO:Detectors:
+Detector: missing-zero-check
+ChildContract.constructor(address,string)._owner (contracts/ChildContract.sol#8) lacks a zero-check on :
+		- owner = _owner (contracts/ChildContract.sol#9)
+VulnerableAccess.setOwner(address).newOwner (contracts/VulnerableAccess.sol#12) lacks a zero-check on :
+		- owner = newOwner (contracts/VulnerableAccess.sol#13)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-zero-address-validation
+INFO:Detectors:
+Detector: assembly
+AssemblyDemo.senderAssembly() (contracts/AssemblyDemo.sol#11-15) uses assembly
+	- INLINE ASM (contracts/AssemblyDemo.sol#12-14)
+AssemblyDemo.isPowerOfTwoAssembly(uint256) (contracts/AssemblyDemo.sol#21-25) uses assembly
+	- INLINE ASM (contracts/AssemblyDemo.sol#22-24)
+AssemblyDemo.setValueAssembly(uint256) (contracts/AssemblyDemo.sol#31-35) uses assembly
+	- INLINE ASM (contracts/AssemblyDemo.sol#32-34)
+AssemblyDemo.getValueAssembly() (contracts/AssemblyDemo.sol#37-41) uses assembly
+	- INLINE ASM (contracts/AssemblyDemo.sol#38-40)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Detector: pragma
+6 different versions of Solidity are used:
+	- Version constraint ^0.8.20 is used by:
+		-^0.8.20 (node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol#3)
+		-^0.8.20 (node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/access/Ownable.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/proxy/utils/Initializable.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Address.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Context.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Errors.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/StorageSlot.sol#5)
+	- Version constraint ^0.8.22 is used by:
+		-^0.8.22 (node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol#3)
+		-^0.8.22 (node_modules/@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol#4)
+	- Version constraint >=0.4.11 is used by:
+		->=0.4.11 (node_modules/@openzeppelin/contracts/interfaces/IERC1967.sol#4)
+	- Version constraint >=0.4.16 is used by:
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/draft-IERC1822.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/proxy/beacon/IBeacon.sol#4)
+	- Version constraint ^0.8.21 is used by:
+		-^0.8.21 (node_modules/@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol#4)
+	- Version constraint ^0.8.23 is used by:
+		-^0.8.23 (contracts/AssemblyDemo.sol#2)
+		-^0.8.23 (contracts/Attacker.sol#2)
+		-^0.8.23 (contracts/ChildContract.sol#2)
+		-^0.8.23 (contracts/Factory.sol#2)
+		-^0.8.23 (contracts/FixedAccess.sol#2)
+		-^0.8.23 (contracts/FixedVault.sol#2)
+		-^0.8.23 (contracts/LogicV1.sol#2)
+		-^0.8.23 (contracts/LogicV2.sol#2)
+		-^0.8.23 (contracts/Optimized.sol#2)
+		-^0.8.23 (contracts/Unoptimized.sol#2)
+		-^0.8.23 (contracts/VulnerableAccess.sol#2)
+		-^0.8.23 (contracts/VulnerableVault.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+INFO:Detectors:
+Detector: low-level-calls
+Low level call in FixedAccess.withdrawAll() (contracts/FixedAccess.sol#9-12):
+	- (ok,None) = owner().call{value: address(this).balance}() (contracts/FixedAccess.sol#10)
+Low level call in FixedVault.withdraw(uint256) (contracts/FixedVault.sol#13-22):
+	- (ok,None) = msg.sender.call{value: amount}() (contracts/FixedVault.sol#20)
+Low level call in VulnerableAccess.withdrawAll() (contracts/VulnerableAccess.sol#17-20):
+	- (ok,None) = msg.sender.call{value: address(this).balance}() (contracts/VulnerableAccess.sol#18)
+Low level call in VulnerableVault.withdraw(uint256) (contracts/VulnerableVault.sol#11-21):
+	- (ok,None) = msg.sender.call{value: amount}() (contracts/VulnerableVault.sol#15)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+Detector: naming-convention
+Parameter Factory.deployWithCreate(string)._name (contracts/Factory.sol#12) is not in mixedCase
+Parameter Factory.deployWithCreate2(string,bytes32)._name (contracts/Factory.sol#18) is not in mixedCase
+Parameter Optimized.updateNote(string)._note (contracts/Optimized.sol#28) is not in mixedCase
+Parameter Unoptimized.updateNote(string)._note (contracts/Unoptimized.sol#19) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Detectors:
+Detector: redundant-statements
+Redundant expression "ok (contracts/VulnerableVault.sol#17)" inVulnerableVault (contracts/VulnerableVault.sol#4-26)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#redundant-statements
+INFO:Detectors:
+Detector: constable-states
+Optimized.smallA (contracts/Optimized.sol#6) should be constant 
+Optimized.smallB (contracts/Optimized.sol#7) should be constant 
+Unoptimized.smallA (contracts/Unoptimized.sol#6) should be constant 
+Unoptimized.smallB (contracts/Unoptimized.sol#8) should be constant 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+INFO:Detectors:
+Detector: immutable-states
+Attacker.target (contracts/Attacker.sol#7) should be immutable 
+ChildContract.owner (contracts/ChildContract.sol#5) should be immutable 
+Unoptimized.owner (contracts/Unoptimized.sol#9) should be immutable 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-immutable
+INFO:Slither:. analyzed (27 contracts with 101 detectors), 28 result(s) found
